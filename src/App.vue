@@ -1,31 +1,54 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li><a href="http://router.vuejs.org/" target="_blank">vue-router</a></li>
-      <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
-      <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-    </ul>
+    <el-container>
+      <!-- <el-aside>aside</el-aside> -->
+      <el-container>
+        <el-header class="mine-header">
+          <global-header :routes='routes'></global-header>
+        </el-header>
+        <el-main class="mine-main">
+          <mine-breadcrumb :currentUrl='currentUrl'></mine-breadcrumb>
+          <keep-alive>
+            <router-view></router-view>
+          </keep-alive>
+        </el-main>
+        <el-footer class="mine-footer">footer</el-footer>
+      </el-container>
+    </el-container>
   </div>
 </template>
 
 <script>
+import globalHeader from 'src/components/globalHeader';
+import mineBreadcrumb from 'src/components/mineBreadcrumb';
+import routes from '../vue_router/routes';
+
 export default {
   name: 'app',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      routes,
+      currentUrl:'',
     }
+  },
+  watch:{
+    '$route'(){
+      this.currentUrl=this.$route.path;
+    }
+  },
+  computed:{
+    name(){
+      return this.$store.state.name;
+    },
+  },
+  mounted(){
+    this.currentUrl=this.$route.path;
+    // console.log('router',this.$router.options.routes);
+  },
+  components:{
+    globalHeader,
+    mineBreadcrumb,
   }
 }
 </script>
@@ -35,26 +58,15 @@ export default {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
-
-h1, h2 {
-  font-weight: normal;
+.mine-header{
+  box-shadow: 0px 0px 3px #DDD;
 }
-
-ul {
-  list-style-type: none;
-  padding: 0;
+.mine-main{
+  background: #F0F2F5;
 }
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
+.mine-footer{
+  background: #F0F2F5;
 }
 </style>
