@@ -124,9 +124,9 @@
                 </el-tab-pane>
             </el-tabs>
         </el-card>
-        <el-row :gutter="24">
+        <el-row :gutter="24" type="flex" style="margin-bottom:24px;">
             <el-col :xl="12" :lg="12" :md="12" :xs="24">
-                <el-card>
+                <el-card style="height:100%;">
                     <div slot="header" class="flexbox">
                         <div class="flex1">线上热门搜索</div>
                         <el-button size="small" type="text">...</el-button>
@@ -148,7 +148,7 @@
                             </p>
                             <mini-chart :height="46" :chartData='visitData'></mini-chart>
                         </el-col>
-                        <el-table style="width:100%;">
+                        <el-table style="width:100%;" border size="small">
                             <el-table-column prop="rank" label="排名" width="100"></el-table-column>
                             <el-table-column prop="keyWord" label="搜索关键词"></el-table-column>
                             <el-table-column prop="userNum" label="用户数"></el-table-column>
@@ -159,100 +159,101 @@
                 </el-card>
             </el-col>
             <el-col :xl="12" :lg="12" :md="12" :xs="24">
-                <el-card>
+                <el-card style="height:100%;">
                     <div slot="header" class="flexbox">
                         <div class="flex1">销售额类别占比</div>
                         <el-button-group>
-                            <el-button size="small">全部渠道</el-button>
-                            <el-button size="small">线上</el-button>
-                            <el-button size="small">门店</el-button>
+                            <el-button size="small" @click="changeSaleType(1)">全部渠道</el-button>
+                            <el-button size="small" @click="changeSaleType(2)">线上</el-button>
+                            <el-button size="small" @click="changeSaleType(3)">门店</el-button>
                         </el-button-group>
                     </div>
-                    <div>111</div>
+                    <div>
+                        <ve-ring :data="saleTypePrecent" :legend="{type:'scroll',top:'middle',right:'20px',orient:'vertical'}"></ve-ring>
+                    </div>
                 </el-card>
             </el-col>
         </el-row>
+        <el-card>
+            <el-tabs>
+                <el-tab-pane>
+                    <div slot="label">
+                        <div class="tabs-title-label">Store1</div>
+                        <div class="flexbox">
+                            <div class="flex1 tabs-title-detail">
+                                <p>转化率</p>
+                                <p>70%</p>
+                            </div>
+                            <div>
+                                <option-chart :option="smallRingOption" :width='40' :height='40'></option-chart>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <option-chart :option="storeOption"></option-chart>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane>
+                    <div slot="label">
+                        <div class="tabs-title-label">Store2</div>
+                        <div class="flexbox">
+                            <div class="flex1 tabs-title-detail">
+                                <p>转化率</p>
+                                <p>30%</p>
+                            </div>
+                            <div>
+                                <option-chart :option="smallRingOption" :width='40' :height='40'></option-chart>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <option-chart :option="storeOption"></option-chart>
+                    </div>
+                </el-tab-pane>
+            </el-tabs>
+        </el-card>
     </div>
 </template>
 
 <script>
 import numeral from 'numeral';
-import VeHistogram from 'v-charts/lib/histogram.common';
+import { mapState, mapActions } from 'vuex';
 import miniChart from 'src/components/miniEcharts/miniLineChart.vue';
 import miniBarChart from 'src/components/miniEcharts/miniBarChart.vue';
+import optionChart from 'src/components/Echarts/optionChart.vue';
 
 export default {
     data(){
         return {
-            data:'Welcome! this is home page',
-            totalSaleNum:2034,
-            daySaleNum:386,
-            visitData:{
-                columns:['日期','访问用户'],
-                rows:[
-                    {'日期':'1/1','访问用户':8},
-                    {'日期':'1/2','访问用户':3},
-                    {'日期':'1/3','访问用户':9},
-                    {'日期':'1/4','访问用户':6},
-                    {'日期':'1/5','访问用户':7},
-                    {'日期':'1/6','访问用户':1},
-                    {'日期':'1/7','访问用户':9},
-                ]
-            },
-            payData:{
-                columns:['日期','支付笔数'],
-                rows:[
-                    {'日期':'2/2','支付笔数':80},
-                    {'日期':'2/3','支付笔数':30},
-                    {'日期':'2/4','支付笔数':90},
-                    {'日期':'2/5','支付笔数':60},
-                    {'日期':'2/6','支付笔数':70},
-                    {'日期':'2/7','支付笔数':10},
-                    {'日期':'2/8','支付笔数':90},
-                    {'日期':'2/9','支付笔数':60},
-                ]
-            },
-            saleTrend:{
-                columns:['月份','支付笔数'],
-                rows:[
-                    {'月份':'1月','支付笔数':80},
-                    {'月份':'2月','支付笔数':30},
-                    {'月份':'3月','支付笔数':90},
-                    {'月份':'4月','支付笔数':60},
-                    {'月份':'5月','支付笔数':70},
-                    {'月份':'6月','支付笔数':10},
-                    {'月份':'7月','支付笔数':90},
-                    {'月份':'8月','支付笔数':60},
-                    {'月份':'9月','支付笔数':60},
-                    {'月份':'10月','支付笔数':60},
-                    {'月份':'11月','支付笔数':60},
-                    {'月份':'12月','支付笔数':60},
-                ]
-            },
-            rankData:[
-                {id:'1',name:'工专路 1 号店',rank:1,num:323234},
-                {id:'2',name:'工专路 2 号店',rank:2,num:323234},
-                {id:'3',name:'工专路 3 号店',rank:3,num:323234},
-                {id:'4',name:'工专路 4 号店',rank:4,num:323234},
-                {id:'5',name:'工专路 5 号店',rank:5,num:323234},
-                {id:'6',name:'工专路 6 号店',rank:6,num:323234},
-                {id:'7',name:'工专路 7 号店',rank:7,num:323234},
-                {id:'8',name:'工专路 8 号店',rank:8,num:323234},
-            ]
+            homeData:'1',
         }
     },
     computed:{
+        ...mapState('home',[
+            'totalSaleNum',
+            'daySaleNum',
+            'visitData',
+            'payData',
+            'saleTrend',
+            'rankData',
+            'saleTypePrecent',
+            'smallRingOption',
+            'storeOption',
+        ]),
         transTotalSaleNum(){
             return numeral(this.totalSaleNum).format('0,0');
         },
         transDaySaleNum(){
             return numeral(this.daySaleNum).format('0,0');
-        }
+        },
     },
     mounted(){
-        // console.log(this.$route);
+        console.log(this.data);
     },
     methods:{
+        ...mapActions('home',[
+            'changeSaleType',
+        ]),
         tabSwitch(){
             this.$nextTick(_=>{
                 this.$refs['visitChart'].echarts.resize();
@@ -262,12 +263,12 @@ export default {
     components:{
         miniChart,
         miniBarChart,
-        VeHistogram
+        optionChart,
     }
 }
 </script>
 
-<style scoped>
+<style>
 .body-main{
     padding:10px 0;
 }
@@ -301,8 +302,28 @@ export default {
     line-height: 20px;
     padding-right: 20px;
 }
+.tabs-title-label{
+    text-align:center;
+    color:#AAA;
+    font-size:16px;
+}
+.tabs-title-detail{
+    margin-right: 10px;
+    width: 100px;
+    text-align: center;
+}
+.tabs-title-detail p:first-child{
+    color: #AAA;
+    font-size: 14px;
+}
+.tabs-title-detail p{
+    font-size: 20px;
+}
 .footer-text{
     font-size: 16px;
     padding-top: 8px;
+}
+.el-tabs__item{
+    height: auto;
 }
 </style>
